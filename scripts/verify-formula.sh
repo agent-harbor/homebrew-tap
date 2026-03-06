@@ -39,7 +39,7 @@ check_content() {
   fi
 }
 
-check_content "Has release repo constant" 'RELEASE_REPO = "'
+check_content "Has downloads base URL constant" 'DOWNLOADS_BASE_URL = "'
 check_content "Has release version constant" 'RELEASE_VERSION = "'
 check_content "Has ARM checksum constant" 'ARM64_SHA256 = "'
 check_content "Has Intel checksum constant" 'X86_64_SHA256 = "'

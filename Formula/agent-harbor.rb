@@ -10,7 +10,7 @@
 # update only the version and checksums without rewriting the rest of the formula.
 
 class AgentHarbor < Formula
-  RELEASE_REPO = "agent-harbor/homebrew-tap"
+  DOWNLOADS_BASE_URL = "https://downloads.agent-harbor.com/macos"
   RELEASE_VERSION = "0.0.0"
   ARM64_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000"
   X86_64_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -23,16 +23,16 @@ class AgentHarbor < Formula
 
   # Placeholder URL so Homebrew can parse the formula before the first release
   # updates the constants above.
-  url "https://github.com/#{RELEASE_REPO}/releases/download/v#{RELEASE_VERSION}/ah-macos-arm64.tar.gz"
+  url "#{DOWNLOADS_BASE_URL}/v#{RELEASE_VERSION}/ah-macos-arm64.tar.gz"
   sha256 ARM64_SHA256
 
   on_arm do
-    url "https://github.com/#{RELEASE_REPO}/releases/download/v#{RELEASE_VERSION}/ah-macos-arm64.tar.gz"
+    url "#{DOWNLOADS_BASE_URL}/v#{RELEASE_VERSION}/ah-macos-arm64.tar.gz"
     sha256 ARM64_SHA256
   end
 
   on_intel do
-    url "https://github.com/#{RELEASE_REPO}/releases/download/v#{RELEASE_VERSION}/ah-macos-x86_64.tar.gz"
+    url "#{DOWNLOADS_BASE_URL}/v#{RELEASE_VERSION}/ah-macos-x86_64.tar.gz"
     sha256 X86_64_SHA256
   end
 

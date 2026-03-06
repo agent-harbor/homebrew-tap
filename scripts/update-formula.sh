@@ -9,7 +9,7 @@ Usage:
 
 Examples:
   ./scripts/update-formula.sh 0.3.2 <arm64-sha256> <x86_64-sha256>
-  ./scripts/update-formula.sh 0.3.2 <arm64-sha256> <x86_64-sha256> blocksense-network/agent-harbor
+  ./scripts/update-formula.sh 0.3.2 <arm64-sha256> <x86_64-sha256> agent-harbor/homebrew-tap
 EOF
 }
 
@@ -21,7 +21,7 @@ fi
 VERSION="${1#v}"
 ARM64_SHA256="$2"
 X86_64_SHA256="$3"
-RELEASE_REPO="${4:-blocksense-network/agent-harbor}"
+RELEASE_REPO="${4:-agent-harbor/homebrew-tap}"
 FORMULA="Formula/agent-harbor.rb"
 
 if [[ ! -f "$FORMULA" ]]; then

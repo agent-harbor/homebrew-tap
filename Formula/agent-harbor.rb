@@ -10,7 +10,7 @@
 # update only the version and checksums without rewriting the rest of the formula.
 
 class AgentHarbor < Formula
-  RELEASE_REPO = "blocksense-network/agent-harbor"
+  RELEASE_REPO = "agent-harbor/homebrew-tap"
   RELEASE_VERSION = "0.0.0"
   ARM64_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000"
   X86_64_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000"

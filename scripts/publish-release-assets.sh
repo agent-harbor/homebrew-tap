@@ -92,6 +92,21 @@ detect_sha256_cmd() {
   exit 1
 }
 
+compute_sha256() {
+  local file_path="$1"
+  local checksum output
+
+  output="$(${SHA256_CMD} "${file_path}")"
+  IFS=' ' read -r checksum _ <<<"${output}"
+
+  if [[ -z "${checksum}" ]]; then
+    log_error "Failed to compute SHA-256 for ${file_path}"
+    exit 1
+  fi
+
+  printf '%s\n' "${checksum}"
+}
+
 for tarball in "$ARM64_TARBALL" "$X86_64_TARBALL"; do
   if [[ ! -f "$tarball" ]]; then
     log_error "Missing staged tarball: $tarball"
@@ -100,8 +115,8 @@ for tarball in "$ARM64_TARBALL" "$X86_64_TARBALL"; do
 done
 
 SHA256_CMD="$(detect_sha256_cmd)"
-ARM64_SHA="$(${SHA256_CMD} "${ARM64_TARBALL}" | awk '{print $1}')"
-X86_64_SHA="$(${SHA256_CMD} "${X86_64_TARBALL}" | awk '{print $1}')"
+ARM64_SHA="$(compute_sha256 "${ARM64_TARBALL}")"
+X86_64_SHA="$(compute_sha256 "${X86_64_TARBALL}")"
 
 log_info "Preparing release assets for ${RELEASE_TAG}"
 log_info "  arm64 sha256: ${ARM64_SHA}"

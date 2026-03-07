@@ -2,9 +2,8 @@
 
 Homebrew tap for the Agent Harbor macOS CLI.
 
-This repository hosts the Homebrew tap metadata for the Agent Harbor macOS CLI.
-The formula downloads release artifacts from the public downloads domain rather
-than GitHub Releases.
+This repository hosts the Homebrew tap metadata and the public GitHub release
+assets for the Agent Harbor macOS CLI.
 
 ## Install
 
@@ -47,8 +46,9 @@ Example:
 
 By default the formula downloads macOS CLI tarballs from:
 
-- `https://downloads.agent-harbor.com/macos/v<version>/ah-macos-arm64.tar.gz`
-- `https://downloads.agent-harbor.com/macos/v<version>/ah-macos-x86_64.tar.gz`
+- `https://github.com/agent-harbor/homebrew-tap/releases/download/v<version>/ah-macos-arm64.tar.gz`
+- `https://github.com/agent-harbor/homebrew-tap/releases/download/v<version>/ah-macos-x86_64.tar.gz`
 
-If the downloads domain changes later, update `Formula/agent-harbor.rb` and the
-release automation in `agent-harbor-2` together.
+Release automation stages tarballs onto `release-assets/v<version>` branches in
+this repository. The `Publish Release Assets` workflow then uploads those files
+to GitHub Releases and updates the formula on `main`.

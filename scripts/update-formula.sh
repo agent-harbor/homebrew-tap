@@ -5,15 +5,15 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/update-formula.sh <version> <arm64-sha256> <x86_64-sha256> [downloads-base-url]
+  ./scripts/update-formula.sh <version> <arm64-sha256> <x86_64-sha256> [downloads-base-url] [formula]
 
 Examples:
   ./scripts/update-formula.sh 0.3.2 <arm64-sha256> <x86_64-sha256>
-  ./scripts/update-formula.sh 0.3.2 <arm64-sha256> <x86_64-sha256> https://downloads.agent-harbor.com/macos
+  ./scripts/update-formula.sh 0.3.2 <arm64-sha256> <x86_64-sha256> https://github.com/agent-harbor/homebrew-tap/releases/download
 EOF
 }
 
-if [[ $# -lt 3 || $# -gt 4 ]]; then
+if [[ $# -lt 3 || $# -gt 5 ]]; then
   usage >&2
   exit 1
 fi
@@ -21,8 +21,8 @@ fi
 VERSION="${1#v}"
 ARM64_SHA256="$2"
 X86_64_SHA256="$3"
-DOWNLOADS_BASE_URL="${4:-https://downloads.agent-harbor.com/macos}"
-FORMULA="Formula/agent-harbor.rb"
+DOWNLOADS_BASE_URL="${4:-https://github.com/agent-harbor/homebrew-tap/releases/download}"
+FORMULA="${5:-Formula/agent-harbor.rb}"
 
 if [[ ! -f "$FORMULA" ]]; then
   echo "Formula not found: $FORMULA" >&2

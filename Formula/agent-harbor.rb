@@ -10,7 +10,7 @@
 # update only the version and checksums without rewriting the rest of the formula.
 
 class AgentHarbor < Formula
-  DOWNLOADS_BASE_URL = "https://downloads.agent-harbor.com/macos"
+  DOWNLOADS_BASE_URL = "https://github.com/agent-harbor/homebrew-tap/releases/download"
   RELEASE_VERSION = "0.0.0"
   ARM64_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000"
   X86_64_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000"

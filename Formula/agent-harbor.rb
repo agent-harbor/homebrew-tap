@@ -11,9 +11,9 @@
 
 class AgentHarbor < Formula
   DOWNLOADS_BASE_URL = "https://github.com/agent-harbor/homebrew-tap/releases/download"
-  RELEASE_VERSION = "0.3.18"
-  ARM64_SHA256 = "caadcb42c84b161c709ec86438646a140e56450053e123cecd02dd5dcaf8fa20"
-  X86_64_SHA256 = "7e1dbafa47f7e5f502cb813d3c8b987be37c5dc19ae7a315bffb131ecfb1b88c"
+  RELEASE_VERSION = "0.3.19"
+  ARM64_SHA256 = "981976ced582b8862f9b950ad60ccd754514ac75a0d773ab97587793234255ed"
+  X86_64_SHA256 = "7e41b58aaf044f2d25f34171198d8aba01570d440c091d33958b4015b48230f6"
 
   desc "AI coding agent orchestration platform"
   homepage "https://agent-harbor.com"

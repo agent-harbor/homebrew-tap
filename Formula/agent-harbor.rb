@@ -20,6 +20,9 @@ class AgentHarbor < Formula
   license "AGPL-3.0-only"
   version RELEASE_VERSION
   depends_on "tmux"
+  # An empty X86_64_SHA256 means the release ships Apple Silicon only (macOS
+  # releases are arm64-only since v0.4.0; ONNX Runtime has no x86_64 prebuilt).
+  depends_on arch: :arm64 if X86_64_SHA256.empty?
 
   # Placeholder URL so Homebrew can parse the formula before the first release
   # updates the constants above.
@@ -32,8 +35,10 @@ class AgentHarbor < Formula
   end
 
   on_intel do
-    url "#{DOWNLOADS_BASE_URL}/v#{RELEASE_VERSION}/ah-macos-x86_64.tar.gz"
-    sha256 X86_64_SHA256
+    unless X86_64_SHA256.empty?
+      url "#{DOWNLOADS_BASE_URL}/v#{RELEASE_VERSION}/ah-macos-x86_64.tar.gz"
+      sha256 X86_64_SHA256
+    end
   end
 
   def install

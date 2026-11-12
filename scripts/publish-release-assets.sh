@@ -16,7 +16,8 @@ Usage:
 
 Options:
   --version VERSION    Release version (accepts 1.2.3 or v1.2.3)
-  --staging-dir DIR    Directory containing staged ah-macos-*.tar.gz files
+  --staging-dir DIR    Directory containing staged ah-macos-*.tar.gz files;
+                       arm64 is required, x86_64 optional
                        (default: .release-staging)
   --formula PATH       Formula path to update (default: Formula/agent-harbor.rb)
   --dry-run            Skip GitHub release API calls
@@ -107,20 +108,29 @@ compute_sha256() {
   printf '%s\n' "${checksum}"
 }
 
-for tarball in "$ARM64_TARBALL" "$X86_64_TARBALL"; do
-  if [[ ! -f "$tarball" ]]; then
-    log_error "Missing staged tarball: $tarball"
-    exit 1
-  fi
-done
+# arm64 (Apple Silicon) is required. x86_64 (Intel) is optional: macOS releases
+# are arm64-only since v0.4.0 because ONNX Runtime has no x86_64-apple-darwin
+# prebuilt. Without the Intel tarball the formula is published arm64-only.
+if [[ ! -f "$ARM64_TARBALL" ]]; then
+  log_error "Missing staged tarball: $ARM64_TARBALL"
+  exit 1
+fi
+
+TARBALLS=("$ARM64_TARBALL")
+if [[ -f "$X86_64_TARBALL" ]]; then
+  TARBALLS+=("$X86_64_TARBALL")
+fi
 
 SHA256_CMD="$(detect_sha256_cmd)"
 ARM64_SHA="$(compute_sha256 "${ARM64_TARBALL}")"
-X86_64_SHA="$(compute_sha256 "${X86_64_TARBALL}")"
+X86_64_SHA=""
+if [[ -f "$X86_64_TARBALL" ]]; then
+  X86_64_SHA="$(compute_sha256 "${X86_64_TARBALL}")"
+fi
 
 log_info "Preparing release assets for ${RELEASE_TAG}"
 log_info "  arm64 sha256: ${ARM64_SHA}"
-log_info "  x86_64 sha256: ${X86_64_SHA}"
+log_info "  x86_64 sha256: ${X86_64_SHA:-<none, arm64-only release>}"
 
 if [[ "$DRY_RUN" == "false" ]]; then
   if [[ -z "${GH_TOKEN:-}" ]]; then
@@ -141,8 +151,7 @@ if [[ "$DRY_RUN" == "false" ]]; then
 
   gh release upload "$RELEASE_TAG" \
     --clobber \
-    "$ARM64_TARBALL" \
-    "$X86_64_TARBALL"
+    "${TARBALLS[@]}"
 fi
 
 ./scripts/update-formula.sh \

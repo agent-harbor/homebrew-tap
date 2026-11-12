@@ -56,4 +56,31 @@ grep -q "ARM64_SHA256 = \"${ARM64_SHA_EXPECTED}\"" "$FORMULA_COPY"
 grep -q "X86_64_SHA256 = \"${X86_64_SHA_EXPECTED}\"" "$FORMULA_COPY"
 grep -q 'url "#{DOWNLOADS_BASE_URL}/v#{RELEASE_VERSION}/ah-macos-arm64.tar.gz"' "$FORMULA_COPY"
 
+# arm64-only release: the Intel tarball is absent, as in every release since v0.4.0.
+ARM_ONLY_DIR="${TEST_ROOT}/staging-arm-only"
+ARM_ONLY_FORMULA="${TEST_ROOT}/agent-harbor-arm-only.rb"
+mkdir -p "$ARM_ONLY_DIR"
+cp "${REPO_ROOT}/Formula/agent-harbor.rb" "$ARM_ONLY_FORMULA"
+printf 'arm64-only-tarball\n' >"$ARM_ONLY_DIR/ah-macos-arm64.tar.gz"
+
+"$SCRIPT_DIR/publish-release-assets.sh" \
+  --version 1.2.4 \
+  --staging-dir "$ARM_ONLY_DIR" \
+  --formula "$ARM_ONLY_FORMULA" \
+  --dry-run
+
+ARM_ONLY_SHA_EXPECTED="$(sha256sum "$ARM_ONLY_DIR/ah-macos-arm64.tar.gz" | awk '{print $1}')"
+grep -q 'RELEASE_VERSION = "1.2.4"' "$ARM_ONLY_FORMULA"
+grep -q "ARM64_SHA256 = \"${ARM_ONLY_SHA_EXPECTED}\"" "$ARM_ONLY_FORMULA"
+grep -q '^  X86_64_SHA256 = ""$' "$ARM_ONLY_FORMULA"
+ruby -c "$ARM_ONLY_FORMULA"
+
+# A missing arm64 tarball is still an error.
+rm "$ARM_ONLY_DIR/ah-macos-arm64.tar.gz"
+if "$SCRIPT_DIR/publish-release-assets.sh" --version 1.2.5 \
+  --staging-dir "$ARM_ONLY_DIR" --formula "$ARM_ONLY_FORMULA" --dry-run; then
+  echo "expected failure without the arm64 tarball" >&2
+  exit 1
+fi
+
 TEST_STATUS=0

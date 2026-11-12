@@ -20,3 +20,6 @@ jobs:
 
       - name: Verify formula
         run: ./scripts/verify-formula.sh
+
+      - name: Test release-asset publishing
+        run: ./scripts/test-publish-release-assets.sh

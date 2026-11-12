@@ -5,7 +5,9 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/update-formula.sh <version> <arm64-sha256> <x86_64-sha256> [downloads-base-url] [formula]
+  ./scripts/update-formula.sh <version> <arm64-sha256> <x86_64-sha256|""> [downloads-base-url] [formula]
+
+An empty x86_64 checksum publishes an arm64-only formula.
 
 Examples:
   ./scripts/update-formula.sh 0.3.2 <arm64-sha256> <x86_64-sha256>
@@ -34,7 +36,7 @@ if [[ ! "$ARM64_SHA256" =~ ^[0-9a-f]{64}$ ]]; then
   exit 1
 fi
 
-if [[ ! "$X86_64_SHA256" =~ ^[0-9a-f]{64}$ ]]; then
+if [[ -n "$X86_64_SHA256" && ! "$X86_64_SHA256" =~ ^[0-9a-f]{64}$ ]]; then
   echo "Invalid x86_64 SHA-256: $X86_64_SHA256" >&2
   exit 1
 fi
@@ -46,10 +48,10 @@ RELEASE_VERSION_VALUE="$VERSION" \
 ARM64_SHA256_VALUE="$ARM64_SHA256" \
   perl -0pi -e 's/^  ARM64_SHA256 = "[0-9a-f]{64}"$/  ARM64_SHA256 = "$ENV{ARM64_SHA256_VALUE}"/m' "$FORMULA"
 X86_64_SHA256_VALUE="$X86_64_SHA256" \
-  perl -0pi -e 's/^  X86_64_SHA256 = "[0-9a-f]{64}"$/  X86_64_SHA256 = "$ENV{X86_64_SHA256_VALUE}"/m' "$FORMULA"
+  perl -0pi -e 's/^  X86_64_SHA256 = "[0-9a-f]*"$/  X86_64_SHA256 = "$ENV{X86_64_SHA256_VALUE}"/m' "$FORMULA"
 
 echo "Updated $FORMULA"
 echo "  version: $VERSION"
 echo "  downloads base URL: $DOWNLOADS_BASE_URL"
 echo "  arm64 sha256: $ARM64_SHA256"
-echo "  x86_64 sha256: $X86_64_SHA256"
+echo "  x86_64 sha256: ${X86_64_SHA256:-<none, arm64-only>}"

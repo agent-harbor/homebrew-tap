@@ -24,10 +24,15 @@ jobs:
           ruby-version: "3.3"
 
       - name: Copy staged tarballs out of the release branch
+        shell: bash
         run: |
           mkdir -p "${RUNNER_TEMP}/release-staging"
+          # arm64 is required. x86_64 is optional: macOS releases are
+          # Apple Silicon only since v0.4.0 (no x86_64 ONNX Runtime prebuilt).
           cp .release-staging/ah-macos-arm64.tar.gz "${RUNNER_TEMP}/release-staging/"
-          cp .release-staging/ah-macos-x86_64.tar.gz "${RUNNER_TEMP}/release-staging/"
+          if [[ -f .release-staging/ah-macos-x86_64.tar.gz ]]; then
+            cp .release-staging/ah-macos-x86_64.tar.gz "${RUNNER_TEMP}/release-staging/"
+          fi
 
       - name: Switch to main
         run: |

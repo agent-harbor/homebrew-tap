@@ -33,6 +33,11 @@ jobs:
           if [[ -f .release-staging/ah-macos-x86_64.tar.gz ]]; then
             cp .release-staging/ah-macos-x86_64.tar.gz "${RUNNER_TEMP}/release-staging/"
           fi
+          # The release stages the cask beside the tarballs, as
+          # Casks/agent-harbor.rb. Keep it out of this checkout, which switches
+          # to main next, and fail now if the release did not stage one.
+          mkdir -p "${RUNNER_TEMP}/staged-cask"
+          cp Casks/agent-harbor.rb "${RUNNER_TEMP}/staged-cask/agent-harbor.rb"
 
       - name: Switch to main
         run: |
@@ -52,25 +57,35 @@ jobs:
       - name: Verify formula
         run: ./scripts/verify-formula.sh
 
+      - name: Publish cask
+        run: |
+          RELEASE_TAG="${GITHUB_REF_NAME#release-assets/}"
+          ./scripts/publish-cask.sh \
+            --version "${RELEASE_TAG}" \
+            --staged-cask "${RUNNER_TEMP}/staged-cask/agent-harbor.rb"
+
       - name: Commit formula update
         run: |
           RELEASE_TAG="${GITHUB_REF_NAME#release-assets/}"
 
-          if git diff --quiet; then
-            echo "Formula already up to date"
+          # `git diff` ignores a new, untracked cask: ask for the status.
+          if [[ -z "$(git status --porcelain -- Formula Casks)" ]]; then
+            echo "Formula and cask already up to date"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Formula/agent-harbor.rb
+          git add Formula/agent-harbor.rb Casks/agent-harbor.rb
           git commit -F - <<EOF
-          fix(tap): update formula for ${RELEASE_TAG}
+          fix(tap): update formula and cask for ${RELEASE_TAG}
 
-          Publish Homebrew formula metadata for Agent Harbor ${RELEASE_TAG}.
+          Publish Homebrew formula and cask metadata for Agent Harbor
+          ${RELEASE_TAG}.
 
           Update the GitHub release asset URLs and per-architecture SHA-256
-          values to match the staged macOS CLI tarballs.
+          values to match the staged macOS CLI tarballs, and install the
+          Apple Silicon cask that the release staged.
           EOF
           git push origin HEAD:main
 

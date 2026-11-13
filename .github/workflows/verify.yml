@@ -23,3 +23,6 @@ jobs:
 
       - name: Test release-asset publishing
         run: ./scripts/test-publish-release-assets.sh
+
+      - name: Test cask publishing
+        run: ./scripts/test-publish-cask.sh
